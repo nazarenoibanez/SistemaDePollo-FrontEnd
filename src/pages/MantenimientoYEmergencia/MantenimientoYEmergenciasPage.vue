@@ -34,10 +34,10 @@
           :loading="mantenimientoStore.loading"
           no-data-label="No hay registros guardados"
         >
-          <template #body-cell-resuelto="props">
+          <template #body-cell-estado="props">
             <q-td :props="props">
-              <q-chip :color="props.row.resuelto ? 'positive' : 'warning'" text-color="white" dense>
-                {{ props.row.resuelto ? 'Resuelto' : 'Pendiente' }}
+              <q-chip :color="colorEstado(props.row.estado)" text-color="white" dense>
+                {{ props.row.estado }}
               </q-chip>
             </q-td>
           </template>
@@ -90,9 +90,22 @@ const editId = ref<number | null>(null)
 const confirmandoBaja = ref(false)
 const idABorrar = ref<number | null>(null)
 
+// La API devuelve 0001-01-01 cuando todavía no hay fecha de resolución
+function formatoFecha(v: string | null): string {
+  if (!v || v.startsWith('0001')) return '—'
+  return v.split('T')[0] ?? ''
+}
+
+function colorEstado(estado: string): string {
+  const e = (estado ?? '').toLowerCase()
+  if (e.includes('resuelto')) return 'positive'
+  if (e.includes('proceso')) return 'info'
+  return 'warning'
+}
+
 const columns: QTableColumn<MantenimientoYEmergenciasResponseDto>[] = [
   { name: 'id', label: 'ID', field: 'id', align: 'left', sortable: true },
-  { name: 'galponId', label: 'ID Galpón', field: 'galponId', align: 'center', sortable: true },
+  { name: 'nombreGalpon', label: 'Galpón', field: 'nombreGalpon', align: 'left', sortable: true },
   {
     name: 'descripcion',
     label: 'Descripción',
@@ -101,8 +114,23 @@ const columns: QTableColumn<MantenimientoYEmergenciasResponseDto>[] = [
     sortable: true,
   },
   { name: 'costo', label: 'Costo ($)', field: 'costo', align: 'right', sortable: true },
-  { name: 'fechaRegistro', label: 'Fecha', field: 'fechaRegistro', align: 'left', sortable: true },
-  { name: 'resuelto', label: 'Estado', field: 'resuelto', align: 'center', sortable: true },
+  {
+    name: 'fechaRepote',
+    label: 'Fecha Reporte',
+    field: 'fechaRepote',
+    align: 'left',
+    sortable: true,
+    format: (v: string | null) => formatoFecha(v),
+  },
+  {
+    name: 'fechaResolucion',
+    label: 'Fecha Resolución',
+    field: 'fechaResolucion',
+    align: 'left',
+    sortable: true,
+    format: (v: string | null) => formatoFecha(v),
+  },
+  { name: 'estado', label: 'Estado', field: 'estado', align: 'center', sortable: true },
   { name: 'acciones', label: 'Acciones', field: 'id', align: 'right' },
 ]
 

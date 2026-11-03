@@ -86,27 +86,13 @@ const idABorrar = ref<number | null>(null)
 
 const columns: QTableColumn<ConteoDePollosResponseDto>[] = [
   { name: 'id', label: 'ID', field: 'id', align: 'left', sortable: true },
-  { name: 'galponId', label: 'ID Galpón', field: 'galponId', align: 'center', sortable: true },
-  { name: 'polloId', label: 'ID Pollo', field: 'polloId', align: 'center', sortable: true },
+  { name: 'nombreGalpon', label: 'Galpón', field: 'nombreGalpon', align: 'left', sortable: true },
+  { name: 'nombrePollo', label: 'Pollo', field: 'nombrePollo', align: 'left', sortable: true },
   {
-    name: 'cantidadActual',
-    label: 'Cantidad Actual',
-    field: 'cantidadActual',
+    name: 'cantidadPollos',
+    label: 'Cantidad de Pollos',
+    field: 'cantidadPollos',
     align: 'center',
-    sortable: true,
-  },
-  {
-    name: 'mortalidadDiaria',
-    label: 'Mortalidad Diaria',
-    field: 'mortalidadDiaria',
-    align: 'center',
-    sortable: true,
-  },
-  {
-    name: 'fechaConteo',
-    label: 'Fecha Conteo',
-    field: 'fechaConteo',
-    align: 'left',
     sortable: true,
   },
   { name: 'acciones', label: 'Acciones', field: 'id', align: 'right' },

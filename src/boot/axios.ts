@@ -9,10 +9,10 @@ declare module 'vue' {
   }
 }
 
-// Instancia de axios apuntando a la API de Biblioteca.
+// Instancia de axios apuntando a la API del Criadero de Pollos.
 // Los stores importan `api` directamente; `$api` queda disponible en los componentes.
 const api = axios.create({
-  baseURL: 'https://localhost:5038/api',
+  baseURL: 'https://localhost:7100/api', // perfil "https" del backend (launchSettings.json)
   headers: { 'Content-Type': 'application/json' },
 })
 
@@ -35,7 +35,7 @@ export default defineBoot(({ app, router }) => {
     (error: unknown) => {
       if (isAxiosError(error) && error.response?.status === 401) {
         useAuthStore().logout()
-        void router.push('/login')
+        void router.push('/')
       }
       return Promise.reject(error instanceof Error ? error : new Error(String(error)))
     },

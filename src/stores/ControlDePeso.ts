@@ -28,7 +28,7 @@ export const useControlDePesoStore = defineStore('controlDePeso', () => {
   async function fetchById(id: number): Promise<ControlDePesoResponseDto | null> {
     loading.value = true
     try {
-      const { data } = await api.get<ControlDePesoResponseDto>(`/ControlDePeso/ById?Id=${id}`)
+      const { data } = await api.get<ControlDePesoResponseDto>(`/ControlDePeso/ById?id=${id}`)
       return data
     } catch {
       notificarError('No se pudo cargar el registro de control de peso')
@@ -41,7 +41,7 @@ export const useControlDePesoStore = defineStore('controlDePeso', () => {
   async function create(dto: ControlDePesoRequestDto) {
     loading.value = true
     try {
-      await api.post('/ControlDePeso', dto)
+      await api.post('/ControlDePeso/Crear', dto)
       notificarExito('Control de peso registrado correctamente')
       await fetchAll()
     } catch {
@@ -54,7 +54,7 @@ export const useControlDePesoStore = defineStore('controlDePeso', () => {
   async function update(id: number, dto: ControlDePesoRequestDto) {
     loading.value = true
     try {
-      await api.put(`/ControlDePeso?Id=${id}`, dto)
+      await api.put(`/ControlDePeso/Editar?id=${id}`, dto)
       notificarExito('Control de peso actualizado correctamente')
       await fetchAll()
     } catch {
@@ -67,7 +67,7 @@ export const useControlDePesoStore = defineStore('controlDePeso', () => {
   async function borrar(id: number) {
     loading.value = true
     try {
-      await api.delete(`/ControlDePeso?Id=${id}`)
+      await api.delete(`/ControlDePeso/Eliminar?id=${id}`)
       notificarExito('Control de peso eliminado')
       await fetchAll()
     } catch {

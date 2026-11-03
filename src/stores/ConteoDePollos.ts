@@ -28,7 +28,7 @@ export const useConteoDePollosStore = defineStore('conteoDePollos', () => {
   async function fetchById(id: number): Promise<ConteoDePollosResponseDto | null> {
     loading.value = true
     try {
-      const { data } = await api.get<ConteoDePollosResponseDto>(`/ConteoDePollos/ById?Id=${id}`)
+      const { data } = await api.get<ConteoDePollosResponseDto>(`/ConteoDePollos/ById?id=${id}`)
       return data
     } catch {
       notificarError('No se pudo cargar el registro de conteo')
@@ -41,7 +41,7 @@ export const useConteoDePollosStore = defineStore('conteoDePollos', () => {
   async function create(dto: ConteoDePollosRequestDto) {
     loading.value = true
     try {
-      await api.post('/ConteoDePollos', dto)
+      await api.post('/ConteoDePollos/Crear', dto)
       notificarExito('Conteo de pollos registrado correctamente')
       await fetchAll()
     } catch {
@@ -54,7 +54,7 @@ export const useConteoDePollosStore = defineStore('conteoDePollos', () => {
   async function update(id: number, dto: ConteoDePollosRequestDto) {
     loading.value = true
     try {
-      await api.put(`/ConteoDePollos?Id=${id}`, dto)
+      await api.put(`/ConteoDePollos/Editar?id=${id}`, dto)
       notificarExito('Conteo actualizado correctamente')
       await fetchAll()
     } catch {
@@ -67,7 +67,7 @@ export const useConteoDePollosStore = defineStore('conteoDePollos', () => {
   async function borrar(id: number) {
     loading.value = true
     try {
-      await api.delete(`/ConteoDePollos?Id=${id}`)
+      await api.delete(`/ConteoDePollos/Eliminar?id=${id}`)
       notificarExito('Conteo eliminado')
       await fetchAll()
     } catch {

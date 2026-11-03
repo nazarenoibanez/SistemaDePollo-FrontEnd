@@ -1,9 +1,6 @@
 export interface ControlDePesoRequestDto {
-  conteoId: number
-  trabajadorId: number
-  semana: number
+  conteodepollosId: number
+  fechaPasaje: string // Formato yyyy-MM-dd
+  edadDias: number
   pesoPromedioGr: number
-  gananciaPesoDiariaGr: number
-  alimentoConsumidoKg: number
-  fechaControl: string // Formato yyyy-MM-dd
 }

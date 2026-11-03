@@ -86,7 +86,24 @@ const idABorrar = ref<number | null>(null)
 
 const columns: QTableColumn<ControlDePesoResponseDto>[] = [
   { name: 'id', label: 'ID', field: 'id', align: 'left', sortable: true },
-  { name: 'semana', label: 'Semana', field: 'semana', align: 'center', sortable: true },
+  { name: 'nombreDelGalpon', label: 'Galpón', field: 'nombreDelGalpon', align: 'left', sortable: true },
+  { name: 'nombreDelPollo', label: 'Pollo', field: 'nombreDelPollo', align: 'left', sortable: true },
+  {
+    name: 'cantidadPollosEnConteo',
+    label: 'Pollos en Conteo',
+    field: 'cantidadPollosEnConteo',
+    align: 'center',
+    sortable: true,
+  },
+  {
+    name: 'fechaPasaje',
+    label: 'Fecha de Pesaje',
+    field: 'fechaPasaje',
+    align: 'left',
+    sortable: true,
+    format: (v: string) => (v ? (v.split('T')[0] ?? '') : ''),
+  },
+  { name: 'edadDias', label: 'Edad (días)', field: 'edadDias', align: 'center', sortable: true },
   {
     name: 'pesoPromedioGr',
     label: 'Peso Prom. (g)',
@@ -94,28 +111,6 @@ const columns: QTableColumn<ControlDePesoResponseDto>[] = [
     align: 'center',
     sortable: true,
   },
-  {
-    name: 'gananciaPesoDiariaGr',
-    label: 'Ganancia Diaria (g)',
-    field: 'gananciaPesoDiariaGr',
-    align: 'center',
-    sortable: true,
-  },
-  {
-    name: 'alimentoConsumidoKg',
-    label: 'Alimento (kg)',
-    field: 'alimentoConsumidoKg',
-    align: 'center',
-    sortable: true,
-  },
-  {
-    name: 'conversionAlimenticia',
-    label: 'Conversión',
-    field: 'conversionAlimenticia',
-    align: 'center',
-    sortable: true,
-  },
-  { name: 'fechaControl', label: 'Fecha', field: 'fechaControl', align: 'left', sortable: true },
   { name: 'acciones', label: 'Acciones', field: 'id', align: 'right' },
 ]
 

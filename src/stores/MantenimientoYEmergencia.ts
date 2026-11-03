@@ -31,7 +31,7 @@ export const useMantenimientoYEmergenciasStore = defineStore('mantenimientoYEmer
     loading.value = true
     try {
       const { data } = await api.get<MantenimientoYEmergenciasResponseDto>(
-        `/MantenimientoYEmergencias/ById?Id=${id}`,
+        `/MantenimientoYEmergencias/ById?id=${id}`,
       )
       return data
     } catch {
@@ -45,7 +45,7 @@ export const useMantenimientoYEmergenciasStore = defineStore('mantenimientoYEmer
   async function create(dto: MantenimientoYEmergenciasRequestDto) {
     loading.value = true
     try {
-      await api.post('/MantenimientoYEmergencias', dto)
+      await api.post('/MantenimientoYEmergencias/Crear', dto)
       notificarExito('Registro de mantenimiento creado correctamente')
       await fetchAll()
     } catch {
@@ -58,7 +58,7 @@ export const useMantenimientoYEmergenciasStore = defineStore('mantenimientoYEmer
   async function update(id: number, dto: MantenimientoYEmergenciasRequestDto) {
     loading.value = true
     try {
-      await api.put(`/MantenimientoYEmergencias?Id=${id}`, dto)
+      await api.put(`/MantenimientoYEmergencias/Editar?id=${id}`, dto)
       notificarExito('Registro actualizado correctamente')
       await fetchAll()
     } catch {
@@ -71,7 +71,7 @@ export const useMantenimientoYEmergenciasStore = defineStore('mantenimientoYEmer
   async function borrar(id: number) {
     loading.value = true
     try {
-      await api.delete(`/MantenimientoYEmergencias?Id=${id}`)
+      await api.delete(`/MantenimientoYEmergencias/Eliminar?id=${id}`)
       notificarExito('Registro eliminado')
       await fetchAll()
     } catch {

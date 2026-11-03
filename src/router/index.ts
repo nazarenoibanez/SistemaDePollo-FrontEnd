@@ -35,14 +35,11 @@ export default defineRouter(() => {
     history: createHistory(import.meta.env.QUASAR_VUE_ROUTER_BASE),
   })
 
-  // Guard: las rutas con requiresAuth exigen sesión iniciada
+  // Guard: si la ruta pide sesión y no hay token, va al home, donde se abre el popup de login
   Router.beforeEach((to) => {
     const auth = useAuthStore()
     if (to.meta.requiresAuth && !auth.isAuthenticated) {
-      return { path: '/login', query: { redirect: to.fullPath } }
-    }
-    if (to.path === '/login' && auth.isAuthenticated) {
-      return { path: '/galpones' }
+      return '/'
     }
     return true
   })

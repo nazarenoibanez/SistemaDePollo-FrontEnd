@@ -1,8 +1,8 @@
 export interface ConteoDePollosResponseDto {
   id: number
-  galponId: number
-  polloId: number
-  cantidadActual: number
-  mortalidadDiaria: number
-  fechaConteo: string
+  galponesID: number
+  pollosID: number
+  cantidadPollos: number
+  nombreGalpon: string | null
+  nombrePollo: string | null
 }

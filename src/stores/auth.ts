@@ -20,7 +20,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      const { data } = await api.post<LoginUserResponseDto>('/Auth/login', credenciales)
+      const { data } = await api.post<LoginUserResponseDto>('/Galh/login', credenciales)
       token.value = data.token
       userName.value = data.userName
       localStorage.setItem(TOKEN_KEY, data.token ?? '')

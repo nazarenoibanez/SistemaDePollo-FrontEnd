@@ -15,7 +15,7 @@ export const useGalponStore = defineStore('galpon', () => {
     loading.value = true
     error.value = null
     try {
-      const { data } = await api.get<GalponesResponseDto[]>('/Galpones/All')
+      const { data } = await api.get<GalponesResponseDto[]>('/Galpones/GetAll')
       galpones.value = data
     } catch (e) {
       galpones.value = []
@@ -29,7 +29,7 @@ export const useGalponStore = defineStore('galpon', () => {
   async function fetchById(id: number): Promise<GalponesResponseDto | null> {
     loading.value = true
     try {
-      const { data } = await api.get<GalponesResponseDto>(`/Galpones/ById?Id=${id}`)
+      const { data } = await api.get<GalponesResponseDto>(`/Galpones/ById?id=${id}`)
       return data
     } catch {
       notificarError('No se pudo cargar el galpón')
@@ -42,7 +42,7 @@ export const useGalponStore = defineStore('galpon', () => {
   async function create(dto: GalponesRequestDto) {
     loading.value = true
     try {
-      await api.post('/Galpones', dto)
+      await api.post('/Galpones/Crear', dto)
       notificarExito('Galpón creado correctamente')
       await fetchAll()
     } catch (e) {
@@ -57,7 +57,7 @@ export const useGalponStore = defineStore('galpon', () => {
   async function update(id: number, dto: GalponesRequestDto) {
     loading.value = true
     try {
-      await api.put(`/Galpones?Id=${id}`, dto)
+      await api.put(`/Galpones/Editar?id=${id}`, dto)
       notificarExito('Galpón actualizado correctamente')
       await fetchAll()
     } catch {
@@ -70,7 +70,7 @@ export const useGalponStore = defineStore('galpon', () => {
   async function borrar(id: number) {
     loading.value = true
     try {
-      await api.delete(`/Galpones?Id=${id}`)
+      await api.delete(`/Galpones/Eliminar?id=${id}`)
       notificarExito('Galpón eliminado')
       await fetchAll()
     } catch {

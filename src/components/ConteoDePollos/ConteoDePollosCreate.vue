@@ -8,7 +8,7 @@
     <q-card-section>
       <q-form ref="formRef" greedy @submit.prevent="onSubmit">
         <q-input
-          v-model.number="form.galponId"
+          v-model.number="form.galponesID"
           label="ID Galpón"
           type="number"
           outlined
@@ -17,7 +17,7 @@
           :rules="[(v: number) => v > 0 || 'Ingresa un ID de galpón válido']"
         />
         <q-input
-          v-model.number="form.polloId"
+          v-model.number="form.pollosID"
           label="ID Pollo"
           type="number"
           outlined
@@ -26,30 +26,13 @@
           :rules="[(v: number) => v > 0 || 'Ingresa un ID de pollo válido']"
         />
         <q-input
-          v-model.number="form.cantidadActual"
-          label="Cantidad Actual"
+          v-model.number="form.cantidadPollos"
+          label="Cantidad de Pollos"
           type="number"
           outlined
           class="q-mb-sm"
           lazy-rules
           :rules="[(v: number) => v >= 0 || 'Debe ser mayor o igual a 0']"
-        />
-        <q-input
-          v-model.number="form.mortalidadDiaria"
-          label="Mortalidad Diaria"
-          type="number"
-          outlined
-          class="q-mb-sm"
-          lazy-rules
-          :rules="[(v: number) => v >= 0 || 'Debe ser mayor o igual a 0']"
-        />
-        <q-input
-          v-model="form.fechaConteo"
-          label="Fecha de Conteo"
-          type="date"
-          outlined
-          class="q-mb-sm"
-          stack-label
         />
       </q-form>
     </q-card-section>
@@ -79,11 +62,9 @@ const conteoStore = useConteoDePollosStore()
 const formRef = ref<QForm | null>(null)
 
 const form = ref<ConteoDePollosRequestDto>({
-  galponId: 0,
-  polloId: 0,
-  cantidadActual: 0,
-  mortalidadDiaria: 0,
-  fechaConteo: new Date().toISOString().split('T')[0]!,
+  galponesID: 0,
+  pollosID: 0,
+  cantidadPollos: 0,
 })
 
 onMounted(async () => {
@@ -91,11 +72,9 @@ onMounted(async () => {
     const c = await conteoStore.fetchById(props.editId)
     if (c) {
       form.value = {
-        galponId: c.galponId,
-        polloId: c.polloId,
-        cantidadActual: c.cantidadActual,
-        mortalidadDiaria: c.mortalidadDiaria,
-        fechaConteo: c.fechaConteo ? c.fechaConteo.split('T')[0]! : '',
+        galponesID: c.galponesID,
+        pollosID: c.pollosID,
+        cantidadPollos: c.cantidadPollos,
       }
     }
   }

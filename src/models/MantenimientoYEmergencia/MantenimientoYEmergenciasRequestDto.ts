@@ -1,9 +1,8 @@
 export interface MantenimientoYEmergenciasRequestDto {
-  galponId: number
-  trabajadorId: number
-  tipoRegistro: number // Enum: Mantenimiento, Emergencia, etc.
+  galponesID: number
   descripcion: string
   costo: number
-  fechaRegistro: string // Formato yyyy-MM-dd
-  resuelto: boolean
+  fechaRepote: string // Formato yyyy-MM-dd (fecha en que se reporta)
+  fechaResolucion: string | null // Formato yyyy-MM-dd; null mientras no se resuelva
+  estado: string
 }

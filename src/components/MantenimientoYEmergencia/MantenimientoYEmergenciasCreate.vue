@@ -10,31 +10,13 @@
     <q-card-section>
       <q-form ref="formRef" greedy @submit.prevent="onSubmit">
         <q-input
-          v-model.number="form.galponId"
+          v-model.number="form.galponesID"
           label="ID Galpón"
           type="number"
           outlined
           class="q-mb-sm"
           lazy-rules
           :rules="[(v: number) => v > 0 || 'Ingresa un ID de galpón válido']"
-        />
-        <q-input
-          v-model.number="form.trabajadorId"
-          label="ID Trabajador"
-          type="number"
-          outlined
-          class="q-mb-sm"
-          lazy-rules
-          :rules="[(v: number) => v > 0 || 'Ingresa un ID de trabajador válido']"
-        />
-        <q-input
-          v-model.number="form.tipoRegistro"
-          label="Tipo de Registro (Número/Enum)"
-          type="number"
-          outlined
-          class="q-mb-sm"
-          lazy-rules
-          :rules="[(v: number) => v >= 0 || 'Ingresa un tipo válido']"
         />
         <q-input
           v-model="form.descripcion"
@@ -57,14 +39,31 @@
           :rules="[(v: number) => v >= 0 || 'Debe ser mayor o igual a 0']"
         />
         <q-input
-          v-model="form.fechaRegistro"
-          label="Fecha de Registro"
+          v-model="form.fechaRepote"
+          label="Fecha de Reporte"
           type="date"
           outlined
           class="q-mb-sm"
           stack-label
+          lazy-rules
+          :rules="[(v: string) => !!v || 'Ingresa la fecha de reporte']"
         />
-        <q-toggle v-model="form.resuelto" label="¿Está Resuelto?" class="q-mb-sm" />
+        <q-input
+          v-model="form.fechaResolucion"
+          label="Fecha de Resolución (opcional)"
+          type="date"
+          outlined
+          clearable
+          class="q-mb-sm"
+          stack-label
+        />
+        <q-select
+          v-model="form.estado"
+          :options="estados"
+          label="Estado"
+          outlined
+          class="q-mb-sm"
+        />
       </q-form>
     </q-card-section>
 
@@ -92,28 +91,34 @@ const emit = defineEmits(['close'])
 const mantenimientoStore = useMantenimientoYEmergenciasStore()
 const formRef = ref<QForm | null>(null)
 
+const estados = ['Pendiente', 'En proceso', 'Resuelto']
+
 const form = ref<MantenimientoYEmergenciasRequestDto>({
-  galponId: 0,
-  trabajadorId: 0,
-  tipoRegistro: 0,
+  galponesID: 0,
   descripcion: '',
   costo: 0,
-  fechaRegistro: new Date().toISOString().split('T')[0]!,
-  resuelto: false,
+  fechaRepote: new Date().toISOString().split('T')[0]!,
+  fechaResolucion: null,
+  estado: 'Pendiente',
 })
+
+// La API devuelve 0001-01-01 cuando todavía no hay fecha de resolución
+function soloFecha(v: string | null): string | null {
+  if (!v || v.startsWith('0001')) return null
+  return v.split('T')[0] ?? null
+}
 
 onMounted(async () => {
   if (props.editId) {
     const m = await mantenimientoStore.fetchById(props.editId)
     if (m) {
       form.value = {
-        galponId: m.galponId,
-        trabajadorId: m.trabajadorId,
-        tipoRegistro: m.tipoRegistro,
+        galponesID: m.galponesID,
         descripcion: m.descripcion,
         costo: m.costo,
-        fechaRegistro: m.fechaRegistro ? m.fechaRegistro.split('T')[0]! : '',
-        resuelto: m.resuelto,
+        fechaRepote: soloFecha(m.fechaRepote) ?? '',
+        fechaResolucion: soloFecha(m.fechaResolucion),
+        estado: m.estado || 'Pendiente',
       }
     }
   }
@@ -124,9 +129,9 @@ async function onSubmit() {
   if (!valido) return
 
   if (props.editId) {
-    await mantenimientoStore.update(props.editId, form.value)
+    await mantenimientoStore.update(props.editId, { ...form.value, fechaResolucion: form.value.fechaResolucion || null })
   } else {
-    await mantenimientoStore.create(form.value)
+    await mantenimientoStore.create({ ...form.value, fechaResolucion: form.value.fechaResolucion || null })
   }
   emit('close')
 }

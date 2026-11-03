@@ -8,7 +8,7 @@
     <q-card-section>
       <q-form ref="formRef" greedy @submit.prevent="onSubmit">
         <q-input
-          v-model.number="form.conteoId"
+          v-model.number="form.conteodepollosId"
           label="ID Conteo de Pollos"
           type="number"
           outlined
@@ -17,22 +17,23 @@
           :rules="[(v: number) => v > 0 || 'Ingresa un ID de conteo válido']"
         />
         <q-input
-          v-model.number="form.trabajadorId"
-          label="ID Trabajador"
-          type="number"
+          v-model="form.fechaPasaje"
+          label="Fecha de Pesaje"
+          type="date"
           outlined
           class="q-mb-sm"
+          stack-label
           lazy-rules
-          :rules="[(v: number) => v > 0 || 'Ingresa un ID de trabajador válido']"
+          :rules="[(v: string) => !!v || 'Ingresa la fecha']"
         />
         <q-input
-          v-model.number="form.semana"
-          label="Semana"
+          v-model.number="form.edadDias"
+          label="Edad (días)"
           type="number"
           outlined
           class="q-mb-sm"
           lazy-rules
-          :rules="[(v: number) => v >= 1 || 'Ingresa un número de semana válido']"
+          :rules="[(v: number) => v >= 0 || 'Debe ser mayor o igual a 0']"
         />
         <q-input
           v-model.number="form.pesoPromedioGr"
@@ -43,34 +44,6 @@
           class="q-mb-sm"
           lazy-rules
           :rules="[(v: number) => v > 0 || 'Debe ser mayor a 0']"
-        />
-        <q-input
-          v-model.number="form.gananciaPesoDiariaGr"
-          label="Ganancia Diaria (Gramos)"
-          type="number"
-          step="0.01"
-          outlined
-          class="q-mb-sm"
-          lazy-rules
-          :rules="[(v: number) => v >= 0 || 'Debe ser mayor o igual a 0']"
-        />
-        <q-input
-          v-model.number="form.alimentoConsumidoKg"
-          label="Alimento Consumido (KG)"
-          type="number"
-          step="0.01"
-          outlined
-          class="q-mb-sm"
-          lazy-rules
-          :rules="[(v: number) => v >= 0 || 'Debe ser mayor o igual a 0']"
-        />
-        <q-input
-          v-model="form.fechaControl"
-          label="Fecha de Control"
-          type="date"
-          outlined
-          class="q-mb-sm"
-          stack-label
         />
       </q-form>
     </q-card-section>
@@ -100,13 +73,10 @@ const controlStore = useControlDePesoStore()
 const formRef = ref<QForm | null>(null)
 
 const form = ref<ControlDePesoRequestDto>({
-  conteoId: 0,
-  trabajadorId: 0,
-  semana: 1,
+  conteodepollosId: 0,
+  fechaPasaje: new Date().toISOString().split('T')[0]!,
+  edadDias: 0,
   pesoPromedioGr: 0,
-  gananciaPesoDiariaGr: 0,
-  alimentoConsumidoKg: 0,
-  fechaControl: new Date().toISOString().split('T')[0]!,
 })
 
 onMounted(async () => {
@@ -114,13 +84,10 @@ onMounted(async () => {
     const c = await controlStore.fetchById(props.editId)
     if (c) {
       form.value = {
-        conteoId: c.conteoId,
-        trabajadorId: c.trabajadorId,
-        semana: c.semana,
+        conteodepollosId: c.controlID,
+        fechaPasaje: c.fechaPasaje ? c.fechaPasaje.split('T')[0]! : '',
+        edadDias: c.edadDias,
         pesoPromedioGr: c.pesoPromedioGr,
-        gananciaPesoDiariaGr: c.gananciaPesoDiariaGr,
-        alimentoConsumidoKg: c.alimentoConsumidoKg,
-        fechaControl: c.fechaControl ? c.fechaControl.split('T')[0]! : '',
       }
     }
   }

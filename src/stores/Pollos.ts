@@ -28,7 +28,7 @@ export const usePolloStore = defineStore('pollo', () => {
   async function fetchById(id: number): Promise<PollosResponseDto | null> {
     loading.value = true
     try {
-      const { data } = await api.get<PollosResponseDto>(`/Pollos/ById?Id=${id}`)
+      const { data } = await api.get<PollosResponseDto>(`/Pollos/ById?id=${id}`)
       return data
     } catch {
       notificarError('No se pudo cargar el pollo')
@@ -41,7 +41,7 @@ export const usePolloStore = defineStore('pollo', () => {
   async function create(dto: PollosRequestDto) {
     loading.value = true
     try {
-      await api.post('/Pollos', dto)
+      await api.post('/Pollos/Crear', dto)
       notificarExito('Pollo creado correctamente')
       await fetchAll()
     } catch {
@@ -54,7 +54,7 @@ export const usePolloStore = defineStore('pollo', () => {
   async function update(id: number, dto: PollosRequestDto) {
     loading.value = true
     try {
-      await api.put(`/Pollos?Id=${id}`, dto)
+      await api.put(`/Pollos/Editar?id=${id}`, dto)
       notificarExito('Pollo actualizado correctamente')
       await fetchAll()
     } catch {
@@ -67,7 +67,7 @@ export const usePolloStore = defineStore('pollo', () => {
   async function borrar(id: number) {
     loading.value = true
     try {
-      await api.delete(`/Pollos?Id=${id}`)
+      await api.delete(`/Pollos/Eliminar?id=${id}`)
       notificarExito('Pollo eliminado')
       await fetchAll()
     } catch {

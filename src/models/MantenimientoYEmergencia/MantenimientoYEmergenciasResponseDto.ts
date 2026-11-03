@@ -1,10 +1,10 @@
 export interface MantenimientoYEmergenciasResponseDto {
   id: number
-  galponId: number
-  trabajadorId: number
-  tipoRegistro: number
+  galponesID: number
   descripcion: string
   costo: number
-  fechaRegistro: string
-  resuelto: boolean
+  fechaRepote: string
+  fechaResolucion: string | null
+  estado: string
+  nombreGalpon: string | null
 }
