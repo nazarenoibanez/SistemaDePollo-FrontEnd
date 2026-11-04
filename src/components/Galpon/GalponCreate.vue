@@ -1,134 +1,94 @@
 <template>
-  <q-page padding>
-    <q-card class="q-pa-md">
-      <div class="row items-center q-gutter-sm">
-        <div class="text-h6">Galpones</div>
-        <q-space />
+  <q-card style="min-width: 400px">
+    <q-card-section>
+      <div class="text-h6">{{ editId ? 'Editar Galpón' : 'Nuevo Galpón' }}</div>
+    </q-card-section>
+    <q-separator />
+
+    <q-card-section>
+      <q-form ref="formRef" greedy @submit.prevent="onSubmit">
         <q-input
-          v-model="filtro"
-          dense
+          v-model="form.nombre"
+          label="Nombre"
           outlined
-          placeholder="Buscar"
-          debounce="300"
-          style="width: 220px"
-        >
-          <template #append>
-            <q-icon v-if="filtro === ''" name="search" />
-            <q-icon v-else name="close" class="cursor-pointer" @click="filtro = ''" />
-          </template>
-        </q-input>
-        <q-btn round unelevated color="primary" icon="add" @click="abrirAlta">
-          <q-tooltip>Nuevo Galpón</q-tooltip>
-        </q-btn>
-        <q-btn flat round icon="refresh" :loading="galponStore.loading" @click="recargar">
-          <q-tooltip>Actualizar</q-tooltip>
-        </q-btn>
-      </div>
+          class="q-mb-sm"
+          :maxlength="30"
+          counter
+          lazy-rules
+          :rules="[(v: string) => (!!v && v.trim().length > 0) || 'Ingresa el nombre']"
+        />
+        <q-input
+          v-model="form.tamaño"
+          label="Tamaño"
+          outlined
+          class="q-mb-sm"
+          lazy-rules
+          :rules="[(v: string) => (!!v && v.trim().length > 0) || 'Ingresa el tamaño']"
+        />
+        <q-input
+          v-model.number="form.cantidadAlmacenado"
+          label="Cantidad Almacenada"
+          type="number"
+          outlined
+          class="q-mb-sm"
+          lazy-rules
+          :rules="[(v: number) => v >= 0 || 'Debe ser mayor o igual a 0']"
+        />
+      </q-form>
+    </q-card-section>
 
-      <q-card-section>
-        <q-table
-          :rows="galponStore.galpones"
-          :columns="columns"
-          row-key="id"
-          :filter="filtro"
-          :loading="galponStore.loading"
-          no-data-label="No hay galpones registrados"
-        >
-          <template #body-cell-acciones="props">
-            <q-td class="text-right">
-              <q-btn dense flat color="primary" icon="edit" @click="abrirEdicion(props.row.id)">
-                <q-tooltip>Editar</q-tooltip>
-              </q-btn>
-              <q-btn dense flat color="negative" icon="delete" @click="confirmarBaja(props.row.id)">
-                <q-tooltip>Eliminar</q-tooltip>
-              </q-btn>
-            </q-td>
-          </template>
-        </q-table>
-      </q-card-section>
-    </q-card>
-
-    <q-dialog v-model="mostrarFormulario">
-      <GalponCreate :edit-id="editId" @close="cerrarFormulario" />
-    </q-dialog>
-
-    <q-dialog v-model="confirmandoBaja">
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-icon name="warning" color="warning" size="sm" class="q-mr-sm" />
-          <span class="text-h6">Confirmar Eliminación</span>
-        </q-card-section>
-        <q-card-section>¿Estás seguro de que deseas eliminar este galpón?</q-card-section>
-        <q-card-actions align="right">
-          <q-btn flat label="Cancelar" v-close-popup />
-          <q-btn flat label="Eliminar" color="negative" @click="eliminar" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-  </q-page>
+    <q-card-actions align="right">
+      <q-btn label="Cancelar" flat v-close-popup />
+      <q-btn
+        :label="editId ? 'Guardar' : 'Crear'"
+        color="primary"
+        :loading="galponStore.loading"
+        @click="onSubmit"
+      />
+    </q-card-actions>
+  </q-card>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import type { QTableColumn } from 'quasar'
+import type { QForm } from 'quasar'
 import { useGalponStore } from '@/stores/galpon'
-import type { GalponesResponseDto } from '@/models/Galpon/GalponesResponseDto'
-import GalponCreate from '@/components/Galpon/GalponCreate.vue'
+import type { GalponesRequestDto } from '@/models/Galpon/GalponesRequestDto'
+
+const props = defineProps<{ editId: number | null }>()
+const emit = defineEmits(['close'])
 
 const galponStore = useGalponStore()
-const filtro = ref('')
-const mostrarFormulario = ref(false)
-const editId = ref<number | null>(null)
-const confirmandoBaja = ref(false)
-const idABorrar = ref<number | null>(null)
+const formRef = ref<QForm | null>(null)
 
-const columns: QTableColumn<GalponesResponseDto>[] = [
-  { name: 'id', label: 'ID', field: 'id', align: 'left', sortable: true },
-  { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', sortable: true },
-  { name: 'tamaño', label: 'Tamaño', field: 'tamaño', align: 'left', sortable: true },
-  {
-    name: 'cantidadAlmacenado',
-    label: 'Cantidad Almacenada',
-    field: 'cantidadAlmacenado',
-    align: 'center',
-    sortable: true,
-  },
-  { name: 'acciones', label: 'Acciones', field: 'id', align: 'right' },
-]
-
-function recargar() {
-  void galponStore.fetchAll()
-}
-function abrirAlta() {
-  editId.value = null
-  mostrarFormulario.value = true
-}
-function abrirEdicion(id: number) {
-  editId.value = id
-  mostrarFormulario.value = true
-}
-function cerrarFormulario() {
-  mostrarFormulario.value = false
-  recargar()
-}
-function confirmarBaja(id: number) {
-  idABorrar.value = id
-  confirmandoBaja.value = true
-}
-
-async function eliminar() {
-  if (idABorrar.value !== null) {
-    await galponstoreBorrar(idABorrar.value)
-  }
-  confirmandoBaja.value = false
-  recargar()
-}
-
-async function galponstoreBorrar(id: number) {
-  await galponStore.borrar(id)
-}
-
-onMounted(() => {
-  recargar()
+const form = ref<GalponesRequestDto>({
+  nombre: '',
+  tamaño: '',
+  cantidadAlmacenado: 0,
 })
+
+onMounted(async () => {
+  if (props.editId) {
+    const galpon = await galponStore.fetchById(props.editId)
+    if (galpon) {
+      form.value = {
+        nombre: galpon.nombre,
+        tamaño: galpon.tamaño,
+        cantidadAlmacenado: galpon.cantidadAlmacenado,
+      }
+    }
+  }
+})
+
+async function onSubmit() {
+  const valido = await formRef.value?.validate()
+  if (!valido) return
+
+  if (props.editId) {
+    await galponStore.update(props.editId, form.value)
+  } else {
+    await galponStore.create(form.value)
+  }
+  emit('close')
+}
 </script>
