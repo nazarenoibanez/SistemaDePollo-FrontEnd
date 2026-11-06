@@ -6,5 +6,5 @@ export interface TrabajadorResponseDto {
   email: string
   fechaDeNacimiento: string
   fechaIngreso: string
-  fechaSalida: string
+  fechaSalida: string | null
 }

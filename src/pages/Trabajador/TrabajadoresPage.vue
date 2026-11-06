@@ -71,6 +71,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import type { QTableColumn } from 'quasar'
+import { roles, etiqueta } from '@/Utils/Opciones'
+import { fechaParaTabla } from '@/Utils/Fechas'
 import { useTrabajadorStore } from '@/stores/Trabajador'
 import type { TrabajadorResponseDto } from '@/models/Trabajador/TrabajadorResponseDto'
 import TrabajadorCreate from '@/components/Trabajador/TrabajadorCreate.vue'
@@ -87,6 +89,22 @@ const columns: QTableColumn<TrabajadorResponseDto>[] = [
   { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', sortable: true },
   { name: 'apellido', label: 'Apellido', field: 'apellido', align: 'left', sortable: true },
   { name: 'email', label: 'Email', field: 'email', align: 'left', sortable: true },
+  {
+    name: 'rol',
+    label: 'Rol',
+    field: 'rol',
+    align: 'left',
+    sortable: true,
+    format: (v: number) => etiqueta(roles, v),
+  },
+  {
+    name: 'fechaSalida',
+    label: 'Fecha de Salida',
+    field: 'fechaSalida',
+    align: 'left',
+    sortable: true,
+    format: (v: string | null) => fechaParaTabla(v),
+  },
   { name: 'acciones', label: 'Acciones', field: 'id', align: 'right' },
 ]
 

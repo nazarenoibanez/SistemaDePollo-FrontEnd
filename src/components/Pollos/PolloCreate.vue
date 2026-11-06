@@ -17,23 +17,23 @@
           lazy-rules
           :rules="[(v: string) => (!!v && v.trim().length > 0) || 'Ingresa el nombre']"
         />
-        <q-input
-          v-model.number="form.tipoPollo"
-          label="Tipo de Pollo (Número/Enum)"
-          type="number"
+        <q-select
+          v-model="form.tipoPollo"
+          :options="tiposDePollo"
+          label="Tipo de Pollo"
           outlined
+          emit-value
+          map-options
           class="q-mb-sm"
-          lazy-rules
-          :rules="[(v: number) => v >= 0 || 'Ingresa un tipo válido']"
         />
-        <q-input
-          v-model.number="form.tipoAlimento"
-          label="Tipo de Alimento (Número/Enum)"
-          type="number"
+        <q-select
+          v-model="form.tipoAlimento"
+          :options="tiposDeAlimento"
+          label="Tipo de Alimento"
           outlined
+          emit-value
+          map-options
           class="q-mb-sm"
-          lazy-rules
-          :rules="[(v: number) => v >= 0 || 'Ingresa un tipo de alimento válido']"
         />
       </q-form>
     </q-card-section>
@@ -55,6 +55,7 @@ import { onMounted, ref } from 'vue'
 import { QForm } from 'quasar'
 import { usePolloStore } from '@/stores/Pollos'
 import type { PollosRequestDto } from '@/models/Pollos/PollosRequestDto'
+import { tiposDePollo, tiposDeAlimento, valorPorNombre } from '@/Utils/Opciones'
 
 const props = defineProps<{ editId: number | null }>()
 const emit = defineEmits(['close'])
@@ -72,11 +73,11 @@ onMounted(async () => {
   if (props.editId) {
     const pollo = await polloStore.fetchById(props.editId)
     if (pollo) {
-      // Ajusta si manejas strings o enums numéricos en tu backend
+      // La API devuelve el nombre del enum (texto); el desplegable necesita el número
       form.value = {
         nombre: pollo.nombre,
-        tipoPollo: 0,
-        tipoAlimento: 0,
+        tipoPollo: valorPorNombre(tiposDePollo, pollo.tipoPollo),
+        tipoAlimento: valorPorNombre(tiposDeAlimento, pollo.tipoAlimento),
       }
     }
   }

@@ -71,6 +71,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import type { QTableColumn } from 'quasar'
+import { tiposDePollo, tiposDeAlimento, etiqueta } from '@/Utils/Opciones'
 import { usePolloStore } from '@/stores/Pollos'
 import type { PollosResponseDto } from '@/models/Pollos/PollosResponseDto'
 import PolloCreate from '@/components/Pollos/PolloCreate.vue'
@@ -85,13 +86,21 @@ const idABorrar = ref<number | null>(null)
 const columns: QTableColumn<PollosResponseDto>[] = [
   { name: 'id', label: 'ID', field: 'id', align: 'left', sortable: true },
   { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', sortable: true },
-  { name: 'tipoPollo', label: 'Tipo de Pollo', field: 'tipoPollo', align: 'left', sortable: true },
+  {
+    name: 'tipoPollo',
+    label: 'Tipo de Pollo',
+    field: 'tipoPollo',
+    align: 'left',
+    sortable: true,
+    format: (v: string) => etiqueta(tiposDePollo, v),
+  },
   {
     name: 'tipoAlimento',
     label: 'Tipo de Alimento',
     field: 'tipoAlimento',
     align: 'left',
     sortable: true,
+    format: (v: string) => etiqueta(tiposDeAlimento, v),
   },
   { name: 'acciones', label: 'Acciones', field: 'id', align: 'right' },
 ]

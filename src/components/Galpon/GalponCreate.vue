@@ -1,5 +1,5 @@
 <template>
-  <q-card style="min-width: 400px">
+  <q-card style="min-width: 450px">
     <q-card-section>
       <div class="text-h6">{{ editId ? 'Editar Galpón' : 'Nuevo Galpón' }}</div>
     </q-card-section>
@@ -17,14 +17,42 @@
           lazy-rules
           :rules="[(v: string) => (!!v && v.trim().length > 0) || 'Ingresa el nombre']"
         />
-        <q-input
-          v-model="form.tamaño"
-          label="Tamaño"
-          outlined
-          class="q-mb-sm"
-          lazy-rules
-          :rules="[(v: string) => (!!v && v.trim().length > 0) || 'Ingresa el tamaño']"
-        />
+
+        <div class="row q-col-gutter-sm">
+          <div class="col-6">
+            <q-input
+              v-model.number="ancho"
+              label="Ancho (m)"
+              type="number"
+              step="0.01"
+              min="0"
+              outlined
+              lazy-rules
+              :rules="[(v: number | null) => (v !== null && v > 0) || 'Ingresa el ancho']"
+            />
+          </div>
+          <div class="col-6">
+            <q-input
+              v-model.number="largo"
+              label="Largo (m)"
+              type="number"
+              step="0.01"
+              min="0"
+              outlined
+              lazy-rules
+              :rules="[(v: number | null) => (v !== null && v > 0) || 'Ingresa el largo']"
+            />
+          </div>
+        </div>
+        <div class="text-caption text-grey-7 q-mb-sm q-mt-xs">
+          Superficie: <b>{{ superficie }} m²</b>
+        </div>
+
+        <q-banner v-if="tamanoAnterior" dense rounded class="bg-orange-1 text-orange-9 q-mb-sm">
+          Tamaño guardado anteriormente: «{{ tamanoAnterior }}». Ingresa el ancho y el largo para
+          reemplazarlo.
+        </q-banner>
+
         <q-input
           v-model.number="form.cantidadAlmacenado"
           label="Cantidad Almacenada"
@@ -50,8 +78,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import type { QForm } from 'quasar'
+import { computed, onMounted, ref } from 'vue'
+import { QForm } from 'quasar'
 import { useGalponStore } from '@/stores/galpon'
 import type { GalponesRequestDto } from '@/models/Galpon/GalponesRequestDto'
 
@@ -61,21 +89,39 @@ const emit = defineEmits(['close'])
 const galponStore = useGalponStore()
 const formRef = ref<QForm | null>(null)
 
-const form = ref<GalponesRequestDto>({
-  nombre: '',
-  tamaño: '',
-  cantidadAlmacenado: 0,
+const form = ref({ nombre: '', cantidadAlmacenado: 0 })
+const ancho = ref<number | null>(null)
+const largo = ref<number | null>(null)
+const tamanoAnterior = ref('')
+
+const superficie = computed(() => {
+  const a = ancho.value ?? 0
+  const l = largo.value ?? 0
+  return Math.round(a * l * 100) / 100
 })
+
+// En la base se guarda un solo texto, por ejemplo: "10 x 20 m (200 m²)"
+function armarTamano(): string {
+  return `${ancho.value} x ${largo.value} m (${superficie.value} m²)`
+}
+
+// Al editar, se separa ese texto otra vez en ancho y largo
+function leerTamano(texto: string) {
+  const m = /^\s*(\d+(?:[.,]\d+)?)\s*[xX×]\s*(\d+(?:[.,]\d+)?)/.exec(texto ?? '')
+  if (m && m[1] && m[2]) {
+    ancho.value = Number(m[1].replace(',', '.'))
+    largo.value = Number(m[2].replace(',', '.'))
+  } else if (texto) {
+    tamanoAnterior.value = texto
+  }
+}
 
 onMounted(async () => {
   if (props.editId) {
-    const galpon = await galponStore.fetchById(props.editId)
-    if (galpon) {
-      form.value = {
-        nombre: galpon.nombre,
-        tamaño: galpon.tamaño,
-        cantidadAlmacenado: galpon.cantidadAlmacenado,
-      }
+    const g = await galponStore.fetchById(props.editId)
+    if (g) {
+      form.value = { nombre: g.nombre, cantidadAlmacenado: g.cantidadAlmacenado }
+      leerTamano(g.tamaño)
     }
   }
 })
@@ -84,10 +130,16 @@ async function onSubmit() {
   const valido = await formRef.value?.validate()
   if (!valido) return
 
+  const dto: GalponesRequestDto = {
+    nombre: form.value.nombre,
+    tamaño: armarTamano(),
+    cantidadAlmacenado: form.value.cantidadAlmacenado,
+  }
+
   if (props.editId) {
-    await galponStore.update(props.editId, form.value)
+    await galponStore.update(props.editId, dto)
   } else {
-    await galponStore.create(form.value)
+    await galponStore.create(dto)
   }
   emit('close')
 }

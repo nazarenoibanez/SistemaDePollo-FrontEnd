@@ -29,7 +29,7 @@ export const useTrabajadorStore = defineStore('trabajador', () => {
   async function fetchById(id: number): Promise<TrabajadorResponseDto | null> {
     loading.value = true
     try {
-      const { data } = await api.get<TrabajadorResponseDto>(`/Trabajador/ById?Id=${id}`)
+      const { data } = await api.get<TrabajadorResponseDto>(`/Trabajador/ById?id=${id}`)
       return data
     } catch {
       notificarError('No se pudo cargar el trabajador')
@@ -42,7 +42,7 @@ export const useTrabajadorStore = defineStore('trabajador', () => {
   async function create(dto: TrabajadorRequestDto) {
     loading.value = true
     try {
-      await api.post('/Trabajador', dto)
+      await api.post('/Trabajador/Registrar', dto)
       notificarExito('Trabajador registrado correctamente')
       await fetchAll()
     } catch {
@@ -55,7 +55,7 @@ export const useTrabajadorStore = defineStore('trabajador', () => {
   async function update(id: number, dto: TrabajadorRequestDto) {
     loading.value = true
     try {
-      await api.put(`/Trabajador?Id=${id}`, dto)
+      await api.put(`/Trabajador/Editar?id=${id}`, dto)
       notificarExito('Trabajador actualizado correctamente')
       await fetchAll()
     } catch {
@@ -68,7 +68,7 @@ export const useTrabajadorStore = defineStore('trabajador', () => {
   async function borrar(id: number) {
     loading.value = true
     try {
-      await api.delete(`/Trabajador?Id=${id}`)
+      await api.delete(`/Trabajador/Eliminar?id=${id}`)
       notificarExito('Trabajador eliminado')
       await fetchAll()
     } catch {

@@ -23,14 +23,14 @@
           lazy-rules
           :rules="[(v: string) => (!!v && v.trim().length > 0) || 'Ingresa el apellido']"
         />
-        <q-input
-          v-model.number="form.rol"
-          label="Rol (Número/Enum)"
-          type="number"
+        <q-select
+          v-model="form.rol"
+          :options="roles"
+          label="Rol"
           outlined
+          emit-value
+          map-options
           class="q-mb-sm"
-          lazy-rules
-          :rules="[(v: number) => v >= 0 || 'Ingresa un rol válido']"
         />
         <q-input
           v-model="form.email"
@@ -48,6 +48,8 @@
           outlined
           class="q-mb-sm"
           stack-label
+          lazy-rules
+          :rules="[(v: string) => !!v || 'Ingresa la fecha de nacimiento']"
         />
         <q-input
           v-model="form.fechaIngreso"
@@ -56,12 +58,15 @@
           outlined
           class="q-mb-sm"
           stack-label
+          lazy-rules
+          :rules="[(v: string) => !!v || 'Ingresa la fecha de ingreso']"
         />
         <q-input
           v-model="form.fechaSalida"
-          label="Fecha de Salida"
+          label="Fecha de Salida (opcional)"
           type="date"
           outlined
+          clearable
           class="q-mb-sm"
           stack-label
         />
@@ -85,6 +90,8 @@ import { onMounted, ref } from 'vue'
 import { QForm } from 'quasar'
 import { useTrabajadorStore } from '@/stores/Trabajador'
 import type { TrabajadorRequestDto } from '@/models/Trabajador/TrabajadorRequestDto'
+import { roles } from '@/Utils/Opciones'
+import { fechaParaInput } from '@/Utils/Fechas'
 
 const emit = defineEmits(['close'])
 const props = defineProps<{ editId: number | null }>()
@@ -99,7 +106,7 @@ const form = ref<TrabajadorRequestDto>({
   email: '',
   fechaDeNacimiento: '',
   fechaIngreso: '',
-  fechaSalida: '',
+  fechaSalida: null,
 })
 
 onMounted(async () => {
@@ -111,9 +118,9 @@ onMounted(async () => {
         apellido: t.apellido,
         rol: t.rol,
         email: t.email,
-        fechaDeNacimiento: t.fechaDeNacimiento,
-        fechaIngreso: t.fechaIngreso,
-        fechaSalida: t.fechaSalida,
+        fechaDeNacimiento: fechaParaInput(t.fechaDeNacimiento) ?? '',
+        fechaIngreso: fechaParaInput(t.fechaIngreso) ?? '',
+        fechaSalida: fechaParaInput(t.fechaSalida),
       }
     }
   }
@@ -123,10 +130,13 @@ async function onSubmit() {
   const valido = await formRef.value?.validate()
   if (!valido) return
 
+  // Si no se carga fecha de salida, se envía null (el trabajador sigue activo)
+  const dto: TrabajadorRequestDto = { ...form.value, fechaSalida: form.value.fechaSalida || null }
+
   if (props.editId) {
-    await trabajadorStore.update(props.editId, form.value)
+    await trabajadorStore.update(props.editId, dto)
   } else {
-    await trabajadorStore.create(form.value)
+    await trabajadorStore.create(dto)
   }
   emit('close')
 }
