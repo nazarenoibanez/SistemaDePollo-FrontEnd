@@ -4,7 +4,7 @@ import { api } from '@/boot/axios'
 import type { TrabajadorRequestDto } from '@/models/Trabajador/TrabajadorRequestDto'
 import type { TrabajadorResponseDto } from '@/models/Trabajador/TrabajadorResponseDto'
 
-import { notificarExito, notificarError } from '@/Utils/Notificar'
+import { notificarExito, notificarError, mensajeDeError } from '@/Utils/Notificar'
 
 export const useTrabajadorStore = defineStore('trabajador', () => {
   const trabajadores = ref<TrabajadorResponseDto[]>([])
@@ -71,8 +71,8 @@ export const useTrabajadorStore = defineStore('trabajador', () => {
       await api.delete(`/Trabajador/Eliminar?id=${id}`)
       notificarExito('Trabajador eliminado')
       await fetchAll()
-    } catch {
-      notificarError('No se pudo eliminar el trabajador')
+    } catch (e) {
+      notificarError(mensajeDeError(e, 'No se pudo eliminar el trabajador'))
     } finally {
       loading.value = false
     }

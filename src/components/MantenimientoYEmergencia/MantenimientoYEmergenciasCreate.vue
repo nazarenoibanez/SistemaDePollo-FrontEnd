@@ -102,7 +102,6 @@ const form = ref<MantenimientoYEmergenciasRequestDto>({
   estado: 'Pendiente',
 })
 
-// La API devuelve 0001-01-01 cuando todavía no hay fecha de resolución
 function soloFecha(v: string | null): string | null {
   if (!v || v.startsWith('0001')) return null
   return v.split('T')[0] ?? null
@@ -129,9 +128,15 @@ async function onSubmit() {
   if (!valido) return
 
   if (props.editId) {
-    await mantenimientoStore.update(props.editId, { ...form.value, fechaResolucion: form.value.fechaResolucion || null })
+    await mantenimientoStore.update(props.editId, {
+      ...form.value,
+      fechaResolucion: form.value.fechaResolucion || null,
+    })
   } else {
-    await mantenimientoStore.create({ ...form.value, fechaResolucion: form.value.fechaResolucion || null })
+    await mantenimientoStore.create({
+      ...form.value,
+      fechaResolucion: form.value.fechaResolucion || null,
+    })
   }
   emit('close')
 }

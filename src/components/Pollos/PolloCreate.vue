@@ -73,7 +73,6 @@ onMounted(async () => {
   if (props.editId) {
     const pollo = await polloStore.fetchById(props.editId)
     if (pollo) {
-      // La API devuelve el nombre del enum (texto); el desplegable necesita el número
       form.value = {
         nombre: pollo.nombre,
         tipoPollo: valorPorNombre(tiposDePollo, pollo.tipoPollo),

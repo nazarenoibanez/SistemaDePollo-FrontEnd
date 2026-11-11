@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { api } from '@/boot/axios'
 import type { ControlDePesoRequestDto } from '@/models/ControlDePeso/ControlDePesoRequestDto'
 import type { ControlDePesoResponseDto } from '@/models/ControlDePeso/ControlDePesoResponseDto'
-import { notificarExito, notificarError } from '@/Utils/Notificar'
+import { notificarExito, notificarError, mensajeDeError } from '@/Utils/Notificar'
 
 export const useControlDePesoStore = defineStore('controlDePeso', () => {
   const controles = ref<ControlDePesoResponseDto[]>([])
@@ -70,8 +70,8 @@ export const useControlDePesoStore = defineStore('controlDePeso', () => {
       await api.delete(`/ControlDePeso/Eliminar?id=${id}`)
       notificarExito('Control de peso eliminado')
       await fetchAll()
-    } catch {
-      notificarError('No se pudo eliminar el registro')
+    } catch (e) {
+      notificarError(mensajeDeError(e, 'No se pudo eliminar el registro'))
     } finally {
       loading.value = false
     }

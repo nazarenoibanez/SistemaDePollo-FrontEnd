@@ -4,7 +4,7 @@ import { api } from '@/boot/axios'
 import type { RetiroDePollosRequestDto } from '@/models/RetiroDePollos/RetiroDePollosRequestDto'
 import type { RetiroDePollosResponseDto } from '@/models/RetiroDePollos/RetiroDePollosResponseDto'
 
-import { notificarExito, notificarError } from '@/Utils/Notificar'
+import { notificarExito, notificarError, mensajeDeError } from '@/Utils/Notificar'
 
 export const useRetiroDePollosStore = defineStore('retiroDePollos', () => {
   const retiros = ref<RetiroDePollosResponseDto[]>([])
@@ -71,8 +71,8 @@ export const useRetiroDePollosStore = defineStore('retiroDePollos', () => {
       await api.delete(`/RetiroDePollos/Eliminar?id=${id}`)
       notificarExito('Retiro eliminado')
       await fetchAll()
-    } catch {
-      notificarError('No se pudo eliminar el retiro')
+    } catch (e) {
+      notificarError(mensajeDeError(e, 'No se pudo eliminar el retiro'))
     } finally {
       loading.value = false
     }

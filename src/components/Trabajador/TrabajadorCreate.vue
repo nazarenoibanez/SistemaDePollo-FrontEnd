@@ -130,7 +130,6 @@ async function onSubmit() {
   const valido = await formRef.value?.validate()
   if (!valido) return
 
-  // Si no se carga fecha de salida, se envía null (el trabajador sigue activo)
   const dto: TrabajadorRequestDto = { ...form.value, fechaSalida: form.value.fechaSalida || null }
 
   if (props.editId) {

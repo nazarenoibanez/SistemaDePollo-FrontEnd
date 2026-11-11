@@ -4,7 +4,7 @@ import { isAxiosError } from 'axios'
 import { api } from '@/boot/axios'
 import type { GalponesResponseDto } from '@/models/Galpon/GalponesResponseDto'
 import type { GalponesRequestDto } from '@/models/Galpon/GalponesRequestDto'
-import { notificarExito, notificarError } from '@/Utils/Notificar'
+import { notificarExito, notificarError, mensajeDeError } from '@/Utils/Notificar'
 
 export const useGalponStore = defineStore('galpon', () => {
   const galpones = ref<GalponesResponseDto[]>([])
@@ -73,8 +73,8 @@ export const useGalponStore = defineStore('galpon', () => {
       await api.delete(`/Galpones/Eliminar?id=${id}`)
       notificarExito('Galpón eliminado')
       await fetchAll()
-    } catch {
-      notificarError('No se pudo eliminar el galpón')
+    } catch (e) {
+      notificarError(mensajeDeError(e, 'No se pudo eliminar el galpón'))
     } finally {
       loading.value = false
     }

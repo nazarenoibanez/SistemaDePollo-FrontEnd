@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { api } from '@/boot/axios'
 import type { PollosRequestDto } from '@/models/Pollos/PollosRequestDto'
 import type { PollosResponseDto } from '@/models/Pollos/PollosResponseDto'
-import { notificarExito, notificarError } from '@/Utils/Notificar'
+import { notificarExito, notificarError, mensajeDeError } from '@/Utils/Notificar'
 
 export const usePolloStore = defineStore('pollo', () => {
   const pollos = ref<PollosResponseDto[]>([])
@@ -70,8 +70,8 @@ export const usePolloStore = defineStore('pollo', () => {
       await api.delete(`/Pollos/Eliminar?id=${id}`)
       notificarExito('Pollo eliminado')
       await fetchAll()
-    } catch {
-      notificarError('No se pudo eliminar el pollo')
+    } catch (e) {
+      notificarError(mensajeDeError(e, 'No se pudo eliminar el pollo'))
     } finally {
       loading.value = false
     }

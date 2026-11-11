@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { api } from '@/boot/axios'
 import type { ConteoDePollosRequestDto } from '@/models/ConteoDePollos/ConteoDePollosRequestDto'
 import type { ConteoDePollosResponseDto } from '@/models/ConteoDePollos/ConteoDePollosResponseDto'
-import { notificarExito, notificarError } from '@/Utils/Notificar'
+import { notificarExito, notificarError, mensajeDeError } from '@/Utils/Notificar'
 
 export const useConteoDePollosStore = defineStore('conteoDePollos', () => {
   const conteos = ref<ConteoDePollosResponseDto[]>([])
@@ -70,8 +70,8 @@ export const useConteoDePollosStore = defineStore('conteoDePollos', () => {
       await api.delete(`/ConteoDePollos/Eliminar?id=${id}`)
       notificarExito('Conteo eliminado')
       await fetchAll()
-    } catch {
-      notificarError('No se pudo eliminar el conteo')
+    } catch (e) {
+      notificarError(mensajeDeError(e, 'No se pudo eliminar el conteo'))
     } finally {
       loading.value = false
     }

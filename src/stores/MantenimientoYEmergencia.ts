@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { api } from '@/boot/axios'
 import type { MantenimientoYEmergenciasResponseDto } from '@/models/MantenimientoYEmergencia/MantenimientoYEmergenciasResponseDto'
 import type { MantenimientoYEmergenciasRequestDto } from '@/models/MantenimientoYEmergencia/MantenimientoYEmergenciasRequestDto'
-import { notificarExito, notificarError } from '@/Utils/Notificar'
+import { notificarExito, notificarError, mensajeDeError } from '@/Utils/Notificar'
 
 export const useMantenimientoYEmergenciasStore = defineStore('mantenimientoYEmergencias', () => {
   const mantenimientos = ref<MantenimientoYEmergenciasResponseDto[]>([])
@@ -74,8 +74,8 @@ export const useMantenimientoYEmergenciasStore = defineStore('mantenimientoYEmer
       await api.delete(`/MantenimientoYEmergencias/Eliminar?id=${id}`)
       notificarExito('Registro eliminado')
       await fetchAll()
-    } catch {
-      notificarError('No se pudo eliminar el registro')
+    } catch (e) {
+      notificarError(mensajeDeError(e, 'No se pudo eliminar el registro'))
     } finally {
       loading.value = false
     }

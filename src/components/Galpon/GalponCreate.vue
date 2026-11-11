@@ -100,12 +100,10 @@ const superficie = computed(() => {
   return Math.round(a * l * 100) / 100
 })
 
-// En la base se guarda un solo texto, por ejemplo: "10 x 20 m (200 m²)"
 function armarTamano(): string {
   return `${ancho.value} x ${largo.value} m (${superficie.value} m²)`
 }
 
-// Al editar, se separa ese texto otra vez en ancho y largo
 function leerTamano(texto: string) {
   const m = /^\s*(\d+(?:[.,]\d+)?)\s*[xX×]\s*(\d+(?:[.,]\d+)?)/.exec(texto ?? '')
   if (m && m[1] && m[2]) {
